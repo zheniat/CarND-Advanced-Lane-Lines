@@ -129,4 +129,5 @@ I would like to spend more time:
 * iterating on color thresholds to improve handling of shadows
 * speeding up line detection by limiting search area to the previously found lines +/- some margin
 * eliminating outliers when searching for lines by finding diffs with previous lines
-* replace the hardcoded trapezoid with a calculated area 
+* replace the hardcoded trapezoid with a calculated area
+* try convolutional line detection
