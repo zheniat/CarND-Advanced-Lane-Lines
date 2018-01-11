@@ -26,17 +26,11 @@ The goals / steps of this project are the following:
 [image11]: ./media/lane_overlay.png "Lane overlay"
 
 
-## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
-
-### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
-
 ---
 
 ### Camera Calibration
 
-#### 1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
-
-The code for this step is contained in the "Camera calibration using chessboard images" section  of the IPython notebook located in "./project.ipynb".  
+The code for this step is contained in the "Camera calibration using chessboard images" section of the [notebook](./project.ipynb)
 
 I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
 
@@ -50,7 +44,7 @@ I then used the output `objpoints` and `imgpoints` to compute the camera calibra
 ### Pipeline (single images)
 
 #### 1. Correct image distortion
-Image distortion is done using `cv2.undistort()` function. The wrapper function in code is `undistort_image()`. Here's an example of an undistorted test image:
+Image distortion is done using `cv2.undistort()` function, wrapped in `undistort_image()` in my code. Here's an example of an undistorted test image:
 ![alt text][image3]
 
 #### 2. Create a thresholded binary image
@@ -58,23 +52,29 @@ Image distortion is done using `cv2.undistort()` function. The wrapper function 
 
 I used a combination of gradient and color thresholds to generate a binary image.
 
-I used a combination of three gradient threshold methods: Sobel Threshold (`abs_sobel_threshold()`), magnitude of gradient threshold (`mag_threshold()`), direction of the gradient (`dir_threshold()`). All three methods are combined in the `combined_threshold()` method. You can see kernel and threshold settings in the `get_grad_threshold()` method. Example of the output:
+I used a combination of three gradient threshold methods: Sobel Threshold `abs_sobel_threshold()`, magnitude of gradient threshold `mag_threshold()`, and direction of the gradient `dir_threshold()`. All three methods are combined in the `combined_threshold()` method. You can see kernel and threshold settings in the `get_grad_threshold()` method. Example output:
+
 ![alt text][image4]
 
-For the color threshold detection I converted images to the HLS colorspace and used masks to detect yellow and white lanes (`select_white_yellow_hls()`):
+For the color threshold detection I converted images to the HLS colorspace and used masks to detect yellow and white lanes `select_white_yellow_hls()`:
+
 ![alt text][image5]
 
-I then selected the S channel to obtain the final color gradient (`get_color_threshold()`). Here's an example of a color thresholded image:
+I then selected the S channel to obtain the final color gradient `get_color_threshold()`. Here's an example of a color thresholded image:
+
 ![alt text][image6]
 
-After obtaining gradient and color thresholds, I combined them to obtain the final image (`combine_grad_color_threshold()`). Here's the result:
+After obtaining gradient and color thresholds, I combined them to obtain the final image `combine_grad_color_threshold()`. Here's the result:
+
 ![alt text][image7]
+
 #### 3. Perform perspective transform
 
-I used images with a straight road to manually identify a trapezoid that maps to lanes:
+I used images of a straight road to manually identify a trapezoid that maps to lanes:
+
 ![alt text][image8]
 
- I used the trapezoid to perform the perspective transform. The code for my perspective transform includes a function called `get_warped()`  The `warper()` function takes as inputs an image (`image`) and uses the  hardcoded (`src`) and destination (`dst`) points that I derived from the trapezoid:
+ I used the trapezoid to perform the perspective transform. The code for my perspective transform includes a function called `get_warped()` , which takes as inputs an image `image` and uses the hardcoded source `src` and destination `dst` points that I derived from the trapezoid:
 
 | Source        | Destination   |
 |:-------------:|:-------------:|
@@ -83,26 +83,28 @@ I used images with a straight road to manually identify a trapezoid that maps to
 | 702, 460      | 1031, 0       |
 | 1031, 671     | 1031,671      |
 
-I used `cv2.warpPerspective()` function to perform image transformation to get a bird-eye view of the road:
+I used `cv2.warpPerspective()` function to perform image transformation to get a bird's eye view of the road:
+
 ![alt text][image8]
 
 #### 4. Detect lane lines
 
-I used the histogram line detection algorithm to detect lanes on the image using sliding windows (`find_lane_all_windows()`). I then fit the lines with the 2nd order polynomial (`get_lane_data_overlay()`):
+I used the histogram line detection algorithm to detect lanes on the image using sliding windows `find_lane_all_windows()`. I then fit the lines with the 2nd order polynomial `get_lane_data_overlay()`:
 
 ![alt text][image10]
 
 #### 5. Calculate radius and curvature
-I calculated radius of the curvature and converted it to meters and found the offset from the image center (`find_radius_meters()`).
+I calculated radius of the curvature and converted it to meters. I also found the offset from the image center. `find_radius_meters()`
 
 #### 6. Plot lane outline back on the image
-I used two global variables (`l_lane`, `r_lane`) to track characteristics for each lane and to store data from the 10 previous iterations in order to average lane fit. The variables are instances of the class `Lane`.
+I used two global variables `l_lane` and `r_lane` to track characteristics for each lane and to store data from 10 previous iterations in order to average lane fit. The variables are instances of the class `Lane`.
 
-I output lane curvature and vehicle offset information unto the final image along with the projected lane.
+I output lane curvature and vehicle offset information unto the final image along with the projected lane:
 
 ![alt text][image11]
 
- This pipeline is captured in `get_lane_data_overlay()`.
+This pipeline is captured in `get_lane_data_overlay()`.
+
 ---
 
 ### Process video
@@ -115,7 +117,7 @@ Here's a [link to my video result](./output_images/project_video_processed.mp4)
 
 ### Discussion
 
-Lane detection performed reasonably well on the project video with just using the Sobel gradient threshold algorithm combined with the HLS algorithm. It did poorly on the challenge video failing to detect a lane that had an asphalt line in the middle. Switching to a combined Sobel, magnitude, and direction gradients addressed this problem, though the overall performance on the challenge video is not acceptable: [challenge video result](./output_images/challenge_video_processed.mp4).
+Lane detection performed reasonably well on the project video using just the Sobel gradient threshold algorithm combined with the HLS algorithm. It did poorly on the challenge video failing to detect a lane that had an asphalt line in the middle. Switching to a combined Sobel, magnitude, and direction gradients addressed this problem, though the overall performance on the challenge video is not acceptable: [challenge video result](./output_images/challenge_video_processed.mp4).
 
 Adding pre-processing of yellow and white lines using masks in the HLS colorspace improved performance in areas where asphalt transitions into concrete, though you can still see some hesitation.
 
