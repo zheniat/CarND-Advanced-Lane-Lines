@@ -17,7 +17,6 @@ The goals / steps of this project are the following:
 [image2]: ./media/undistorted_calibration_image.png "Undistorted image"
 [image3]: ./media/undistorted_image.png "Undistorted image"
 [image4]: ./media/combined_grad_threshold.png "Combined gradient threshold"
-[image5]: ./media/hls_lane_mask.png "Yellow and white lane detection using HLS"
 [image6]: ./media/color_thresholded.png "Color threshold using HLS"
 [image7]: ./media/combined_gradient.png "Combined gradient"
 [image8]: ./media/trapezoid.png "Trapezoid"
@@ -56,11 +55,7 @@ I used a combination of three gradient threshold methods: Sobel Threshold `abs_s
 
 ![alt text][image4]
 
-For the color threshold detection I converted images to the HLS colorspace and used masks to detect yellow and white lanes `select_white_yellow_hls()`:
-
-![alt text][image5]
-
-I then selected the S channel to obtain the final color gradient `get_color_threshold()`. Here's an example of a color thresholded image:
+For the color threshold detection I converted images to the HLS, LUV, and LAB colorspaces, merging S channel for HLS, L for LUV (yellow line), and B for LAB (white line) in `get_color_threshold()`. Here's an example of a color thresholded image:
 
 ![alt text][image6]
 
