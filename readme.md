@@ -84,7 +84,7 @@ I used `cv2.warpPerspective()` function to perform image transformation to get a
 
 #### 4. Detect lane lines
 
-I used the histogram line detection algorithm to detect lanes on the image using sliding windows `find_lane_all_windows()`. I then fit the lines with the 2nd order polynomial `get_lane_data_overlay()`:
+I used the histogram line detection algorithm to detect lanes on the image using the area around previously found lines or using sliding windows `window_search()` when no lines were found previously. I then fit the lines with the 2nd order polynomial `get_lane_data_overlay()`:
 
 ![alt text][image10]
 
@@ -122,7 +122,6 @@ Averaging line data from the previous 10 lines smoothed lane tracking.
 I would like to spend more time:
 
 * iterating on color thresholds to improve handling of shadows
-* speeding up line detection by limiting search area to the previously found lines +/- some margin
 * eliminating outliers when searching for lines by finding diffs with previous lines
-* replace the hardcoded trapezoid with a calculated area
+* replace the hardcoded trapezoid with a calculated area to better detect changing road slope (up/down movements)
 * try convolutional line detection
